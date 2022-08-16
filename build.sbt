@@ -1,11 +1,12 @@
 import Dependencies._
+import com.typesafe.sbt.packager.docker._
 
 name := "kafka-stream-tests"
 version := "0.1"
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.13.8",
-  resolvers += "Confluent Maven Repository" at "https://packages.confluent.io/maven/"
+  resolvers += "Confluent Maven Repository" at "https://packages.confluent.io/maven/",
 )
 
 lazy val root = (project in file("."))
@@ -32,9 +33,12 @@ lazy val carDataProducer = (project in file("car-data-producer"))
       Libs.kafkaAvro,
       Libs.catsEffect,
       Libs.scalaTest % Test
-    )
+    ),
+    dockerApiVersion := Some(DockerApiVersion(1, 40)),
+    dockerUpdateLatest := true,
   )
   .dependsOn(domain, avro)
+  .enablePlugins(JavaAppPackaging)
 
 lazy val carDataConsumer = (project in file("car-data-consumer"))
   .settings(commonSettings)
@@ -45,9 +49,12 @@ lazy val carDataConsumer = (project in file("car-data-consumer"))
       Libs.kafkaAvro,
       Libs.catsEffect,
       Libs.scalaTest % Test
-    )
+    ),
+    dockerApiVersion := Some(DockerApiVersion(1, 40)),
+    dockerUpdateLatest := true,
   )
   .dependsOn(domain, avro)
+  .enablePlugins(JavaAppPackaging)
 
 lazy val driverNotifier = (project in file("driver-notifier"))
   .settings(commonSettings)
@@ -58,9 +65,12 @@ lazy val driverNotifier = (project in file("driver-notifier"))
       Libs.kafkaStreamsAvro,
       Libs.avro4sKafka,
       Libs.scalaTest % Test
-    )
+    ),
+    dockerApiVersion := Some(DockerApiVersion(1, 40)),
+    dockerUpdateLatest := true,
   )
   .dependsOn(domain, avro)
+  .enablePlugins(JavaAppPackaging)
 
 lazy val avro = (project in file("avro"))
   .settings(commonSettings)
@@ -73,8 +83,11 @@ lazy val avro = (project in file("avro"))
       Libs.circeGeneric,
       Libs.smlTagging,
       Libs.scalaTest % Test
-    )
+    ),
+    dockerApiVersion := Some(DockerApiVersion(1, 40)),
+    dockerUpdateLatest := true,
   )
   .dependsOn(domain)
+  .enablePlugins(JavaAppPackaging)
 
 lazy val domain = (project in file("domain")).settings(commonSettings)
