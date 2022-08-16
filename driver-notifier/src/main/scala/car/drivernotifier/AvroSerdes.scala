@@ -11,7 +11,7 @@ import scala.jdk.CollectionConverters._
 
 object AvroSerdes {
 
-  private val props = Map("schema.registry.url" -> "http://schema-registry:8081")
+  private val props = Map("schema.registry.url" -> s"http://${sys.env("SCHEMA_REGISTRY_HOST")}:${sys.env("SCHEMA_REGISTRY_PORT")}")
 
   implicit def keySerde[K >: Null](implicit krf: KeyRecordFormat[K]): Serde[K] = {
     val avroKeySerde = new GenericAvroSerde

@@ -22,7 +22,7 @@ object DriverNotifier extends App {
 
   val props = new Properties()
   props.put(APPLICATION_ID_CONFIG, "driver-notifier")
-  props.put(BOOTSTRAP_SERVERS_CONFIG, "kafka:9092")
+  props.put(BOOTSTRAP_SERVERS_CONFIG, List(sys.env("KAFKA_HOST"), sys.env("KAFKA_PORT")).mkString(":"))
 
   val builder: StreamsBuilder = new StreamsBuilder
 

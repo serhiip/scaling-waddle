@@ -9,6 +9,8 @@ object RegisterAvroSchemas extends App {
   case class RegisterSchemaRequest(schema: String)
 
   val backend = HttpURLConnectionBackend()
+  val srHost = sys.env("SCHEMA_REGISTRY_HOST")
+  val srPort = sys.env("SCHEMA_REGISTRY_PORT")
 
   Seq(
     ("car-speed-key", RegisterSchemaRequest(carIdSchema.toString())),
@@ -27,10 +29,12 @@ object RegisterAvroSchemas extends App {
     ("driver-notification-value", RegisterSchemaRequest(driverNotificationSchema.toString()))
   ).map { case (subject, schema) =>
     subject -> basicRequest
-      .post(uri"http://schema-registry:8081/subjects/$subject/versions")
+      .post(uri"http://${srHost}:${srPort}/subjects/$subject/versions")
       .contentType("application/vnd.schemaregistry.v1+json")
       .body(schema)
       .send(backend)
       .code
   } foreach { case (subject, statusCode) => println(s"Register schema $subject, response code: $statusCode") }
+
+  sys.exit(1)
 }

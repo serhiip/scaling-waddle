@@ -18,7 +18,7 @@ module "gke" {
   node_pools = [
     {
       name                   = "${var.cluster_name}-node-pool"
-      machine_type           = "e2-small"
+      machine_type           = "e2-medium"
       node_locations         = join(",", var.zones)
       min_count              = 1
       max_count              = 3
@@ -33,7 +33,7 @@ module "gke" {
       auto_upgrade           = false
       service_account        = var.service_account
       preemptible            = false
-      initial_node_count     = 1
+      initial_node_count     = 2
       create_service_account = false
     },
   ]

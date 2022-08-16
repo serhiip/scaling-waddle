@@ -23,10 +23,10 @@ object CarDataProducer extends IOApp {
 
   private val props: Map[String, Object] = Map(
     CLIENT_ID_CONFIG -> "car-metrics-producer",
-    BOOTSTRAP_SERVERS_CONFIG -> "kafka:9092",
+    BOOTSTRAP_SERVERS_CONFIG -> List(sys.env("KAFKA_HOST"), sys.env("KAFKA_PORT")).mkString(":"),
     KEY_SERIALIZER_CLASS_CONFIG -> classOf[KafkaAvroSerializer],
     VALUE_SERIALIZER_CLASS_CONFIG -> classOf[KafkaAvroSerializer],
-    SCHEMA_REGISTRY_URL_CONFIG -> "http://schema-registry:8081"
+    SCHEMA_REGISTRY_URL_CONFIG -> s"http://${sys.env("SCHEMA_REGISTRY_HOST")}:${sys.env("SCHEMA_REGISTRY_PORT")}"
   )
 
   override def run(args: List[String]): IO[ExitCode] =

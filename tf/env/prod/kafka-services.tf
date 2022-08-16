@@ -1,10 +1,8 @@
 locals {
   zookeeper_client_port         = 2181
-  kafka_port                    = 9092
-  schema_registry_port          = 8081
   schema_registry_listener_port = 8082
   zookeeper_name                = "zookeeper"
-  kafka_name                    = "kafka"
+  kafka_name                    = "kafkaaa"  // this strange name is intentional, see https://github.com/confluentinc/schema-registry/issues/689#issuecomment-401046885
   schema_registry_name          = "schema-reg"
 }
 
@@ -42,11 +40,11 @@ resource "kubernetes_deployment" "zookeeper" {
 
           resources {
             limits = {
-              cpu    = "1"
+              cpu    = "500m"
               memory = "512Mi"
             }
             requests = {
-              cpu    = "250m"
+              cpu    = "125m"
               memory = "50Mi"
             }
           }
@@ -55,7 +53,6 @@ resource "kubernetes_deployment" "zookeeper" {
             container_port = local.zookeeper_client_port
             host_port      = local.zookeeper_client_port
           }
-
 
           env {
             name  = "ZOOKEEPER_CLIENT_PORT"
@@ -95,6 +92,9 @@ resource "kubernetes_service" "zookeeper" {
 }
 
 resource "kubernetes_deployment" "kafka" {
+
+  depends_on = [kubernetes_service.zookeeper, kubernetes_deployment.zookeeper]
+
   metadata {
     name = local.kafka_name
     labels = {
@@ -132,14 +132,14 @@ resource "kubernetes_deployment" "kafka" {
               memory = "512Mi"
             }
             requests = {
-              cpu    = "250m"
+              cpu    = "125m"
               memory = "50Mi"
             }
           }
 
           port {
-            container_port = local.kafka_port
-            host_port      = local.kafka_port
+            container_port = var.kafka_port
+            host_port      = var.kafka_port
           }
 
           env {
@@ -154,12 +154,12 @@ resource "kubernetes_deployment" "kafka" {
 
           env {
             name  = "KAFKA_ADVERTISED_LISTENERS"
-            value = "PLAINTEXT://${local.kafka_name}:${local.kafka_port}"
+            value = "PLAINTEXT://${local.kafka_name}:${var.kafka_port}"
           }
 
           env {
             name  = "KAFKA_AUTO_CREATE_TOPICS_ENABLE"
-            value = "PLAINTEXT://${local.kafka_name}:${local.kafka_port}"
+            value = "PLAINTEXT://${local.kafka_name}:${var.kafka_port}"
           }
 
           env {
@@ -181,6 +181,11 @@ resource "kubernetes_deployment" "kafka" {
             name  = "KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS"
             value = 100
           }
+
+          env {
+            name = "BITNAMI_DEBUG"
+            value = "true"
+          }
         }
       }
     }
@@ -188,6 +193,7 @@ resource "kubernetes_deployment" "kafka" {
 }
 
 resource "kubernetes_service" "kafka" {
+
   metadata {
     name = local.kafka_name
   }
@@ -198,8 +204,8 @@ resource "kubernetes_service" "kafka" {
     }
 
     port {
-      port        = local.kafka_port
-      target_port = local.kafka_port
+      port        = var.kafka_port
+      target_port = var.kafka_port
     }
 
     type = "ClusterIP"
@@ -207,6 +213,9 @@ resource "kubernetes_service" "kafka" {
 }
 
 resource "kubernetes_deployment" "schema_registry" {
+
+  depends_on = [kubernetes_service.kafka, kubernetes_deployment.kafka]
+
   metadata {
     name = local.schema_registry_name
     labels = {
@@ -240,18 +249,18 @@ resource "kubernetes_deployment" "schema_registry" {
 
           resources {
             limits = {
-              cpu    = "1"
-              memory = "512Mi"
+              cpu    = "500m"
+              memory = "256Mi"
             }
             requests = {
-              cpu    = "250m"
+              cpu    = "125m"
               memory = "50Mi"
             }
           }
 
           port {
-            container_port = local.schema_registry_port
-            host_port      = local.schema_registry_port
+            container_port = var.schema_registry_port
+            host_port      = var.schema_registry_port
           }
 
           env {
@@ -266,12 +275,12 @@ resource "kubernetes_deployment" "schema_registry" {
 
           env {
             name  = "SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS"
-            value = "${local.kafka_name}:${local.kafka_port}"
+            value = "${local.kafka_name}:${var.kafka_port}"
           }
 
           env {
             name  = "SCHEMA_REGISTRY_LISTENERS"
-            value = "http://0.0.0.0:${local.schema_registry_port}"
+            value = "http://0.0.0.0:${var.schema_registry_port}"
           }
 
         }
@@ -298,8 +307,8 @@ resource "kubernetes_service" "schema_registry" {
 
     port {
       name = "port"
-      port        = local.schema_registry_port
-      target_port = local.schema_registry_port
+      port        = var.schema_registry_port
+      target_port = var.schema_registry_port
     }
 
 
