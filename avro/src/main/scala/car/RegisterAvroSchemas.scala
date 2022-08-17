@@ -35,6 +35,4 @@ object RegisterAvroSchemas extends App {
       .send(backend)
       .code
   } foreach { case (subject, statusCode) => println(s"Register schema $subject, response code: $statusCode") }
-
-  sys.exit(1)
 }

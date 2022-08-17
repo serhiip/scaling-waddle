@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "notifier" {
 
-  depends_on = [kubernetes_service.kafka, kubernetes_deployment.avro_publisher]
+  depends_on = [kubernetes_service.kafka]
 
   metadata {
     name = "notifier"

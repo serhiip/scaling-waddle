@@ -67,7 +67,7 @@ lazy val driverNotifier = (project in file("driver-notifier"))
       Libs.scalaTest % Test
     ),
     dockerApiVersion := Some(DockerApiVersion(1, 40)),
-    dockerUpdateLatest := true,
+    dockerUpdateLatest := true
   )
   .dependsOn(domain, avro)
   .enablePlugins(JavaAppPackaging)

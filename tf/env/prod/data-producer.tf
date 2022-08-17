@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "data_producer" {
 
-  depends_on = [kubernetes_service.kafka, kubernetes_deployment.avro_publisher]
+  depends_on = [kubernetes_service.kafka]
 
   metadata {
     name = "data-producer"
@@ -66,7 +66,33 @@ resource "kubernetes_deployment" "data_producer" {
           env {
             name  = "SCHEMA_REGISTRY_PORT"
             value = var.schema_registry_port
-          }          
+          }
+        }
+
+        init_container {
+          image = "gcr.io/${var.project_id}/${var.avro_publisher_image_name}:latest"
+          name  = "avro-publisher"
+
+          resources {
+            limits = {
+              cpu    = "500m"
+              memory = "512Mi"
+            }
+            requests = {
+              cpu    = "125m"
+              memory = "50Mi"
+            }
+          }
+
+          env {
+            name  = "SCHEMA_REGISTRY_HOST"
+            value = kubernetes_service.schema_registry.metadata.0.name
+          }
+
+          env {
+            name  = "SCHEMA_REGISTRY_PORT"
+            value = var.schema_registry_port
+          }
         }
       }
     }

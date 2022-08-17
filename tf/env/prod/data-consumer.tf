@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "data_consumer" {
 
-  depends_on = [kubernetes_service.kafka, kubernetes_deployment.avro_publisher]
+  depends_on = [kubernetes_service.kafka]
 
   metadata {
     name = "data-consumer"
