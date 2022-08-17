@@ -2,8 +2,14 @@ locals {
   zookeeper_client_port         = 2181
   schema_registry_listener_port = 8082
   zookeeper_name                = "zookeeper"
-  kafka_name                    = "kafkaaa"  // this strange name is intentional, see https://github.com/confluentinc/schema-registry/issues/689#issuecomment-401046885
+  kafka_name                    = "kafkaaa" // this strange name is intentional, see https://github.com/confluentinc/schema-registry/issues/689#issuecomment-401046885
   schema_registry_name          = "schema-reg"
+}
+
+resource "kubernetes_namespace" "kafka_services" {
+  metadata {
+    name = "kafka-services"
+  }
 }
 
 resource "kubernetes_deployment" "zookeeper" {
@@ -13,6 +19,7 @@ resource "kubernetes_deployment" "zookeeper" {
       type = "kafka"
       app  = "zookeeper"
     }
+    namespace = kubernetes_namespace.kafka_services.metadata.0.name
   }
 
   spec {
@@ -72,7 +79,8 @@ resource "kubernetes_deployment" "zookeeper" {
 
 resource "kubernetes_service" "zookeeper" {
   metadata {
-    name = local.zookeeper_name
+    name      = local.zookeeper_name
+    namespace = kubernetes_namespace.kafka_services.metadata.0.name
   }
   spec {
     selector = {
@@ -101,6 +109,7 @@ resource "kubernetes_deployment" "kafka" {
       type = "kafka"
       app  = "kafka"
     }
+    namespace = kubernetes_namespace.kafka_services.metadata.0.name
   }
 
   spec {
@@ -183,7 +192,7 @@ resource "kubernetes_deployment" "kafka" {
           }
 
           env {
-            name = "BITNAMI_DEBUG"
+            name  = "BITNAMI_DEBUG"
             value = "true"
           }
         }
@@ -195,7 +204,8 @@ resource "kubernetes_deployment" "kafka" {
 resource "kubernetes_service" "kafka" {
 
   metadata {
-    name = local.kafka_name
+    name      = local.kafka_name
+    namespace = kubernetes_namespace.kafka_services.metadata.0.name
   }
   spec {
     selector = {
@@ -222,6 +232,7 @@ resource "kubernetes_deployment" "schema_registry" {
       type = "kafka"
       app  = "schema-registry"
     }
+    namespace = kubernetes_namespace.kafka_services.metadata.0.name
   }
 
   spec {
@@ -291,7 +302,8 @@ resource "kubernetes_deployment" "schema_registry" {
 
 resource "kubernetes_service" "schema_registry" {
   metadata {
-    name = local.schema_registry_name
+    name      = local.schema_registry_name
+    namespace = kubernetes_namespace.kafka_services.metadata.0.name
   }
   spec {
     selector = {
@@ -300,13 +312,13 @@ resource "kubernetes_service" "schema_registry" {
     }
 
     port {
-      name = "listener-port"
+      name        = "listener-port"
       port        = local.schema_registry_listener_port
       target_port = local.schema_registry_listener_port
     }
 
     port {
-      name = "port"
+      name        = "port"
       port        = var.schema_registry_port
       target_port = var.schema_registry_port
     }
