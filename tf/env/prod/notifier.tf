@@ -50,7 +50,7 @@ resource "kubernetes_deployment" "notifier" {
 
           env {
             name  = "KAFKA_HOST"
-            value = kubernetes_service.kafka.metadata.0.name
+            value = "${kubernetes_service.kafka.metadata.0.name}.${kubernetes_namespace.kafka_services.metadata.0.name}"
           }
 
           env {
@@ -60,7 +60,7 @@ resource "kubernetes_deployment" "notifier" {
 
           env {
             name  = "SCHEMA_REGISTRY_HOST"
-            value = kubernetes_service.schema_registry.metadata.0.name
+            value = "${kubernetes_service.schema_registry.metadata.0.name}.${kubernetes_namespace.kafka_services.metadata.0.name}"
           }
 
           env {
