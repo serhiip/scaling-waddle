@@ -42,7 +42,7 @@ resource "kubernetes_deployment" "zookeeper" {
 
       spec {
         container {
-          image = "confluentinc/cp-zookeeper:5.3.0"
+          image = "confluentinc/cp-zookeeper:5.4.2"
           name  = "zookeeper"
 
           resources {
@@ -132,7 +132,7 @@ resource "kubernetes_deployment" "kafka" {
 
       spec {
         container {
-          image = "confluentinc/cp-enterprise-kafka:5.3.0"
+          image = "confluentinc/cp-enterprise-kafka:5.4.2"
           name  = "kafka"
 
           resources {
@@ -255,7 +255,7 @@ resource "kubernetes_deployment" "schema_registry" {
 
       spec {
         container {
-          image = "confluentinc/cp-schema-registry:5.3.0"
+          image = "confluentinc/cp-schema-registry:5.4.2"
           name  = "schema-registry"
 
           resources {
@@ -322,7 +322,6 @@ resource "kubernetes_service" "schema_registry" {
       port        = var.schema_registry_port
       target_port = var.schema_registry_port
     }
-
 
     type = "ClusterIP"
   }
