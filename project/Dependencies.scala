@@ -15,6 +15,8 @@ object Dependencies {
     val logback = "1.4.4"
     val slf4j = "2.0.3"
     val catslogging = "2.5.0"
+    val grpcNetty = "1.50.2"
+    val grpcServices = "1.50.2"
   }
 
   object Libs {
@@ -41,5 +43,8 @@ object Dependencies {
     val logback = "ch.qos.logback" % "logback-classic" % V.logback
     val slf4j = "org.slf4j" % "slf4j-api" % V.slf4j
     val catsLogging = "org.typelevel" %% "log4cats-slf4j" % V.catslogging
+
+    val grpcNetty = "io.grpc" % "grpc-netty-shaded" % V.grpcNetty
+    val grpcServices = "io.grpc" % "grpc-services" % V.grpcServices
   }
 }

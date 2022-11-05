@@ -67,6 +67,8 @@ lazy val driverNotifier = (project in file("driver-notifier"))
       Libs.logback,
       Libs.slf4j,
       Libs.catsLogging,
+      Libs.grpcNetty,
+      Libs.grpcServices,
       Libs.scalaTest % Test
     ),
     dockerApiVersion := Some(DockerApiVersion(1, 40)),
@@ -94,4 +96,4 @@ lazy val avro = (project in file("avro"))
   .dependsOn(domain)
   .enablePlugins(JavaAppPackaging)
 
-lazy val domain = (project in file("domain")).settings(commonSettings)
+lazy val domain = (project in file("domain")).settings(commonSettings).enablePlugins(Fs2Grpc)

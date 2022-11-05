@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package notification;
+
+option java_package = "car.drivernotifier.protos";
+option java_outer_classname = "Notification";
+
+message GetCount {
+  optional string store = 1;
+}
+
+message Count {
+  optional string store = 1;
+  required int32 value = 2;
+}
+
