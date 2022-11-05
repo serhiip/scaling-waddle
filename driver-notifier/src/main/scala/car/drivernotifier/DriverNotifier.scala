@@ -13,51 +13,61 @@ import org.apache.kafka.streams.scala.ImplicitConversions._
 import org.apache.kafka.streams.scala._
 import org.apache.kafka.streams.scala.kstream.{KGroupedStream, KTable, Materialized}
 import org.apache.kafka.streams.state.KeyValueStore
+import org.apache.kafka.streams.state.QueryableStoreTypes
+import org.apache.kafka.streams.StoreQueryParameters
 
 import java.util.Properties
+import org.apache
+import java.time.Duration
 
-object DriverNotifier extends App {
+import scala.jdk.CollectionConverters._
+import org.apache.kafka.common.serialization.Serde
+import org.apache.kafka.streams.KeyQueryMetadata
+import org.typelevel.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.syntax._
+import cats.effect.kernel.Sync
+import cats.effect.IO
+import cats.effect.IOApp
+import cats.effect.ExitCode
+import org.typelevel.log4cats.LoggerFactory
+import org.typelevel.log4cats.slf4j.Slf4jFactory
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats._
+import cats.syntax.flatMap._
+import cats.syntax.monad._
+import cats.effect.Temporal
+import scala.concurrent.duration._
+import cats.FlatMap
+import cats.effect.kernel.Outcome
 
-  import DriverNotifierData._
+object DriverNotifier extends IOApp {
 
-  val props = new Properties()
-  props.put(APPLICATION_ID_CONFIG, "driver-notifier")
-  props.put(BOOTSTRAP_SERVERS_CONFIG, List(sys.env("KAFKA_HOST"), sys.env("KAFKA_PORT")).mkString(":"))
+  implicit def logger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
 
-  val builder: StreamsBuilder = new StreamsBuilder
+  def run(args: List[String]) = {
+    val props = new Properties()
+    props.put(APPLICATION_ID_CONFIG, "driver-notifier")
+    props.put(BOOTSTRAP_SERVERS_CONFIG, List(sys.env("KAFKA_HOST"), sys.env("KAFKA_PORT")).mkString(":"))
 
-  val carSpeed: KGroupedStream[CarId, CarSpeed] = builder.stream[CarId, CarSpeed]("car-speed").groupByKey
-  val carEngine: KGroupedStream[CarId, CarEngine] = builder.stream[CarId, CarEngine]("car-engine").groupByKey
-  val carLocation: KGroupedStream[CarId, CarLocation] = builder.stream[CarId, CarLocation]("car-location").groupByKey
-  val locationData: KTable[LocationId, LocationData] = builder.table[LocationId, LocationData]("location-data")
+    val storeName = "notifications-store"
+    val store     = Store(storeName)
 
-  implicit val carDataSerde: GenericSerde[CarData] = new GenericSerde[CarData](BinaryFormat)
+    for {
+      topology <- Notifier.default[IO](storeName).getTopology
+      streams  <- IO { new KafkaStreams(topology, props) }
+      _        <- IO { streams.start() }
+      _        <- IO {
+                    Runtime.getRuntime.addShutdownHook(new Thread {
+                      override def run() = streams.close()
+                    })
+                  }
+      val query = StateQuery.default[IO, CarId, DriverNotification](streams)
+      _        <- IO.asyncForIO.background(printCounts(store, query).foreverM) use { (_: IO[Outcome[IO, _, _]]) =>
+                    IO.never onCancel { IO apply streams.close() }
+                  }
+    } yield ExitCode.Success
+  }
 
-  val carData: KTable[CarId, CarData] = carSpeed
-    .cogroup[CarData]({ case (_, speed, agg) => agg.copy(speed = speed.some) })
-    .cogroup[CarEngine](carEngine, { case (_, engine, agg) => agg.copy(engine = engine.some) })
-    .cogroup[CarLocation](carLocation, { case (_, location, agg) => agg.copy(location = location.some) })
-    .aggregate(CarData.empty)
-
-  implicit val carAndLocationDataSerde: GenericSerde[CarAndLocationData] = new GenericSerde[CarAndLocationData](BinaryFormat)
-
-  val carAndLocationData: KTable[CarId, CarAndLocationData] = carData
-    .filter({ case (_, carData) => carData.location.isDefined })
-    .join[CarAndLocationData, LocationId, LocationData](
-      locationData,
-      keyExtractor = (carData: CarData) => carData.location.get.locationId,
-      joiner = (carData: CarData, locationData: LocationData) => CarAndLocationData(carData, locationData),
-      materialized = implicitly[Materialized[CarId, CarAndLocationData, KeyValueStore[Bytes, Array[Byte]]]]
-    )
-
-  def print[K, V](k: K, v: V): Unit = println(s"$k -> $v")
-
-  carAndLocationData.toStream.flatMapValues(DriverNotifications(_)).to("driver-notification")
-
-  val topology = builder.build()
-  val streams = new KafkaStreams(topology, props)
-
-  streams.start()
-
-  Runtime.getRuntime.addShutdownHook(new Thread(() => streams.close()))
+  def printCounts[F[_]: Temporal, K: Serde, V](store: Store, query: StateQuery[F, K, V]): F[Unit] =
+    query.count(store) *> Temporal[F].sleep(1.second)
 }

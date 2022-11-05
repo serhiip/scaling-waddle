@@ -54,6 +54,6 @@ object CarDataProducer extends IOApp {
               Option(exception).map(p.failure).getOrElse(p.success(()))
           }
         )
-        IO.fromFuture(IO(p.future)) *> IO(println(s"produced data to [$topic]")) *> IO.sleep(2.seconds)
+        IO.fromFuture(IO(p.future)) *> IO(println(s"produced data to [$topic]")) *> IO.sleep(1.second)
     }.void
 }

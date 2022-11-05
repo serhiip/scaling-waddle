@@ -5,7 +5,7 @@ import car.domain._
 import scala.util.Random
 
 object RandomData {
-  private val carIds = Seq(1, 2)
+  private val carIds = (1 until 4).toSeq
   private val cities = Seq("Wroclaw", "Cracow")
   private val streets = Seq("Sezamowa", "Tunelowa")
 

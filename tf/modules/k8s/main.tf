@@ -14,6 +14,7 @@ module "gke" {
   horizontal_pod_autoscaling = true
   filestore_csi_driver       = false
   create_service_account     = false
+  kubernetes_version         = "1.24.5-gke.600"
 
   node_pools = [
     {
@@ -21,7 +22,7 @@ module "gke" {
       machine_type           = "e2-medium"
       node_locations         = join(",", var.zones)
       min_count              = 1
-      max_count              = 3
+      max_count              = 5
       local_ssd_count        = 0
       spot                   = false
       disk_size_gb           = 10

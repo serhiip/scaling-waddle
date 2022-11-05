@@ -44,3 +44,51 @@ output "cluster_endpoint" {
   value     = module.k8s_cluster.endpoint
   sensitive = true
 }
+
+# resource "kubernetes_persistent_volume_claim" "producer" {
+#   metadata {
+#     name = "producer-storage"
+#   }
+#   spec {
+#     access_modes = ["ReadWriteMany"]
+#     resources {
+#       requests = {
+#         storage = "2Gi"
+#       }
+#     }
+#     volume_name = "${kubernetes_persistent_volume.main.metadata.0.name}"
+#   }
+# }
+
+# resource "kubernetes_persistent_volume_claim" "reg" {
+#   metadata {
+#     name = "schema-registry-storage"
+#   }
+#   spec {
+#     access_modes = ["ReadWriteMany"]
+#     resources {
+#       requests = {
+#         storage = "2Gi"
+#       }
+#     }
+#     volume_name = "${kubernetes_persistent_volume.main.metadata.0.name}"
+#   }
+# }
+
+
+# resource "kubernetes_persistent_volume" "main" {
+#   metadata {
+#     name = "main"
+#   }
+#   spec {
+#     capacity = {
+#       storage = "10Gi"
+#     }
+#     access_modes = ["ReadWriteMany"]
+#     persistent_volume_source {
+#       gce_persistent_disk {
+#         pd_name = "test-123"
+#       }
+#     }
+#   }
+# }

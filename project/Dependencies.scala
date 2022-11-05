@@ -3,14 +3,18 @@ import sbt._
 object Dependencies {
 
   object V {
-    val kafka = "2.8.0"
-    val kafkaAvro = "6.2.0"
-    val avro4s = "4.0.10"
+    val kafka = "7.2.2-ce"
+    val kafkaAvro = "7.2.2"
+    val avro4s = "4.1.0"
     val sttp3 = "3.3.11"
     val circe = "0.14.1"
     val cats = "3.2.5"
     val smlCommon = "2.3.1"
     val scalaTest = "3.2.13"
+    val confluentUtils = "7.2.2"
+    val logback = "1.4.4"
+    val slf4j = "2.0.3"
+    val catslogging = "2.5.0"
   }
 
   object Libs {
@@ -22,6 +26,7 @@ object Dependencies {
 
     val avro4sCore = "com.sksamuel.avro4s" % "avro4s-core_2.13" % V.avro4s
     val avro4sKafka = "com.sksamuel.avro4s" % "avro4s-kafka_2.13" % V.avro4s
+    val confluentUtils = "io.confluent" % "common-utils" % V.confluentUtils
 
     val sttp3Core = "com.softwaremill.sttp.client3" %% "core" % V.sttp3
     val sttp3Circe = "com.softwaremill.sttp.client3" %% "circe" % V.sttp3
@@ -32,5 +37,9 @@ object Dependencies {
     val smlTagging = "com.softwaremill.common" %% "tagging" % V.smlCommon
 
     val scalaTest = "org.scalatest" %% "scalatest" % V.scalaTest
+
+    val logback = "ch.qos.logback" % "logback-classic" % V.logback
+    val slf4j = "org.slf4j" % "slf4j-api" % V.slf4j
+    val catsLogging = "org.typelevel" %% "log4cats-slf4j" % V.catslogging
   }
 }

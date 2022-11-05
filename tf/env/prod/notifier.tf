@@ -34,12 +34,13 @@ resource "kubernetes_deployment" "notifier" {
 
       spec {
         container {
-          image = "gcr.io/${var.project_id}/${var.notifier_image_name}:latest"
-          name  = "notifier"
+          image             = "gcr.io/${var.project_id}/${var.notifier_image_name}:${var.notifier_tag}"
+          image_pull_policy = "Always"
+          name              = "notifier"
 
           resources {
             limits = {
-              cpu    = "500m"
+              cpu    = "1000m"
               memory = "512Mi"
             }
             requests = {
@@ -48,9 +49,14 @@ resource "kubernetes_deployment" "notifier" {
             }
           }
 
+          volume_mount {
+            mount_path = "/tmp"
+            name       = "ephemeral"
+          }
+
           env {
             name  = "KAFKA_HOST"
-            value = "${kubernetes_service.kafka.metadata.0.name}.${kubernetes_namespace.kafka_services.metadata.0.name}"
+            value = kubernetes_service.kafka.metadata.0.name
           }
 
           env {
@@ -60,13 +66,18 @@ resource "kubernetes_deployment" "notifier" {
 
           env {
             name  = "SCHEMA_REGISTRY_HOST"
-            value = "${kubernetes_service.schema_registry.metadata.0.name}.${kubernetes_namespace.kafka_services.metadata.0.name}"
+            value = kubernetes_service.schema_registry.metadata.0.name
           }
 
           env {
             name  = "SCHEMA_REGISTRY_PORT"
             value = var.schema_registry_port
           }
+        }
+
+        volume {
+          name = "ephemeral"
+          empty_dir {}
         }
       }
     }

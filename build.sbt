@@ -6,7 +6,7 @@ version := "0.1"
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.13.8",
-  resolvers += "Confluent Maven Repository" at "https://packages.confluent.io/maven/",
+  resolvers += "Confluent Maven Repository" at "https://packages.confluent.io/maven/"
 )
 
 lazy val root = (project in file("."))
@@ -35,7 +35,7 @@ lazy val carDataProducer = (project in file("car-data-producer"))
       Libs.scalaTest % Test
     ),
     dockerApiVersion := Some(DockerApiVersion(1, 40)),
-    dockerUpdateLatest := true,
+    dockerUpdateLatest := true
   )
   .dependsOn(domain, avro)
   .enablePlugins(JavaAppPackaging)
@@ -51,7 +51,7 @@ lazy val carDataConsumer = (project in file("car-data-consumer"))
       Libs.scalaTest % Test
     ),
     dockerApiVersion := Some(DockerApiVersion(1, 40)),
-    dockerUpdateLatest := true,
+    dockerUpdateLatest := true
   )
   .dependsOn(domain, avro)
   .enablePlugins(JavaAppPackaging)
@@ -64,10 +64,14 @@ lazy val driverNotifier = (project in file("driver-notifier"))
       Libs.kafkaStreamsScala,
       Libs.kafkaStreamsAvro,
       Libs.avro4sKafka,
+      Libs.logback,
+      Libs.slf4j,
+      Libs.catsLogging,
       Libs.scalaTest % Test
     ),
     dockerApiVersion := Some(DockerApiVersion(1, 40)),
-    dockerUpdateLatest := true
+    dockerUpdateLatest := true,
+    dockerBaseImage := "eclipse-temurin:11-jre"
   )
   .dependsOn(domain, avro)
   .enablePlugins(JavaAppPackaging)
@@ -85,7 +89,7 @@ lazy val avro = (project in file("avro"))
       Libs.scalaTest % Test
     ),
     dockerApiVersion := Some(DockerApiVersion(1, 40)),
-    dockerUpdateLatest := true,
+    dockerUpdateLatest := true
   )
   .dependsOn(domain)
   .enablePlugins(JavaAppPackaging)

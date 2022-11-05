@@ -41,3 +41,8 @@ variable "kafka_port" {
   type  = number
   default = 9092
 }
+
+variable "notifier_tag" {
+  type = string
+  default = "latest"
+}

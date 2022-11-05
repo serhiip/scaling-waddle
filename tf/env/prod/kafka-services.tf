@@ -4,6 +4,7 @@ locals {
   zookeeper_name                = "zookeeper"
   kafka_name                    = "kafkaaa" // this strange name is intentional, see https://github.com/confluentinc/schema-registry/issues/689#issuecomment-401046885
   schema_registry_name          = "schema-reg"
+  version                       = "6.2.6"
 }
 
 resource "kubernetes_namespace" "kafka_services" {
@@ -19,7 +20,6 @@ resource "kubernetes_deployment" "zookeeper" {
       type = "kafka"
       app  = "zookeeper"
     }
-    namespace = kubernetes_namespace.kafka_services.metadata.0.name
   }
 
   spec {
@@ -42,18 +42,23 @@ resource "kubernetes_deployment" "zookeeper" {
 
       spec {
         container {
-          image = "confluentinc/cp-zookeeper:5.4.2"
+          image = "confluentinc/cp-zookeeper:${local.version}"
           name  = "zookeeper"
 
           resources {
             limits = {
-              cpu    = "500m"
-              memory = "512Mi"
+              cpu    = "250m"
+              memory = "256Mi"
             }
             requests = {
               cpu    = "125m"
               memory = "50Mi"
             }
+          }
+
+          volume_mount {
+            mount_path = "/tmp"
+            name       = "ephemeral"
           }
 
           port {
@@ -71,6 +76,17 @@ resource "kubernetes_deployment" "zookeeper" {
             value = 2000
           }
         }
+
+        # volume {
+        #   persistent_volume_claim {
+        #     claim_name = "${kubernetes_persistent_volume_claim.reg.metadata.0.name}"
+        #   }
+        # }
+
+        volume {
+          name = "ephemeral"
+          empty_dir {}
+        }
       }
     }
   }
@@ -79,8 +95,7 @@ resource "kubernetes_deployment" "zookeeper" {
 
 resource "kubernetes_service" "zookeeper" {
   metadata {
-    name      = local.zookeeper_name
-    namespace = kubernetes_namespace.kafka_services.metadata.0.name
+    name = local.zookeeper_name
   }
   spec {
     selector = {
@@ -109,7 +124,6 @@ resource "kubernetes_deployment" "kafka" {
       type = "kafka"
       app  = "kafka"
     }
-    namespace = kubernetes_namespace.kafka_services.metadata.0.name
   }
 
   spec {
@@ -132,18 +146,23 @@ resource "kubernetes_deployment" "kafka" {
 
       spec {
         container {
-          image = "confluentinc/cp-enterprise-kafka:5.4.2"
+          image = "confluentinc/cp-enterprise-kafka:${local.version}"
           name  = "kafka"
 
           resources {
             limits = {
               cpu    = "1"
-              memory = "512Mi"
+              memory = "2048Mi"
             }
             requests = {
               cpu    = "125m"
-              memory = "50Mi"
+              memory = "100Mi"
             }
+          }
+
+          volume_mount {
+            mount_path = "/tmp"
+            name       = "ephemeral"
           }
 
           port {
@@ -163,11 +182,6 @@ resource "kubernetes_deployment" "kafka" {
 
           env {
             name  = "KAFKA_ADVERTISED_LISTENERS"
-            value = "PLAINTEXT://${local.kafka_name}:${var.kafka_port}"
-          }
-
-          env {
-            name  = "KAFKA_AUTO_CREATE_TOPICS_ENABLE"
             value = "PLAINTEXT://${local.kafka_name}:${var.kafka_port}"
           }
 
@@ -196,6 +210,12 @@ resource "kubernetes_deployment" "kafka" {
             value = "true"
           }
         }
+
+        volume {
+          name = "ephemeral"
+          empty_dir {}
+        }
+
       }
     }
   }
@@ -204,8 +224,7 @@ resource "kubernetes_deployment" "kafka" {
 resource "kubernetes_service" "kafka" {
 
   metadata {
-    name      = local.kafka_name
-    namespace = kubernetes_namespace.kafka_services.metadata.0.name
+    name = local.kafka_name
   }
   spec {
     selector = {
@@ -232,7 +251,6 @@ resource "kubernetes_deployment" "schema_registry" {
       type = "kafka"
       app  = "schema-registry"
     }
-    namespace = kubernetes_namespace.kafka_services.metadata.0.name
   }
 
   spec {
@@ -255,19 +273,25 @@ resource "kubernetes_deployment" "schema_registry" {
 
       spec {
         container {
-          image = "confluentinc/cp-schema-registry:5.4.2"
+          image = "confluentinc/cp-schema-registry:${local.version}"
           name  = "schema-registry"
 
           resources {
             limits = {
-              cpu    = "500m"
-              memory = "256Mi"
+              cpu    = "1000m"
+              memory = "512Mi"
             }
             requests = {
               cpu    = "125m"
               memory = "50Mi"
             }
           }
+
+          volume_mount {
+            mount_path = "/tmp"
+            name       = "ephemeral"
+          }
+
 
           port {
             container_port = var.schema_registry_port
@@ -293,7 +317,11 @@ resource "kubernetes_deployment" "schema_registry" {
             name  = "SCHEMA_REGISTRY_LISTENERS"
             value = "http://0.0.0.0:${var.schema_registry_port}"
           }
+        }
 
+        volume {
+          name = "ephemeral"
+          empty_dir {}
         }
       }
     }
@@ -302,8 +330,7 @@ resource "kubernetes_deployment" "schema_registry" {
 
 resource "kubernetes_service" "schema_registry" {
   metadata {
-    name      = local.schema_registry_name
-    namespace = kubernetes_namespace.kafka_services.metadata.0.name
+    name = local.schema_registry_name
   }
   spec {
     selector = {
@@ -326,3 +353,4 @@ resource "kubernetes_service" "schema_registry" {
     type = "ClusterIP"
   }
 }
+
