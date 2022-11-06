@@ -78,6 +78,27 @@ lazy val driverNotifier = (project in file("driver-notifier"))
   .dependsOn(domain, avro)
   .enablePlugins(JavaAppPackaging)
 
+lazy val driverNotifierApi = (project in file("driver-notifier-api"))
+  .settings(commonSettings)
+  .settings(
+    name := "driver-notifier-api",
+    libraryDependencies ++= Seq(
+      Libs.kafkaStreamsScala,
+      Libs.kafkaStreamsAvro,
+      Libs.avro4sKafka,
+      Libs.logback,
+      Libs.slf4j,
+      Libs.catsLogging,
+      Libs.grpcNetty,
+      Libs.scalaTest % Test
+    ),
+    dockerApiVersion := Some(DockerApiVersion(1, 40)),
+    dockerUpdateLatest := true,
+    dockerBaseImage := "eclipse-temurin:11-jre"
+  )
+  .dependsOn(domain, avro)
+  .enablePlugins(JavaAppPackaging)
+
 lazy val avro = (project in file("avro"))
   .settings(commonSettings)
   .settings(
