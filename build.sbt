@@ -1,7 +1,7 @@
 import Dependencies._
 import com.typesafe.sbt.packager.docker._
 
-name := "kafka-stream-tests"
+name    := "kafka-stream-tests"
 version := "0.1"
 
 lazy val commonSettings = Seq(
@@ -27,14 +27,14 @@ lazy val root = (project in file("."))
 lazy val carDataProducer = (project in file("car-data-producer"))
   .settings(commonSettings)
   .settings(
-    name := "car-data-producer",
+    name               := "car-data-producer",
     libraryDependencies ++= Seq(
       Libs.kafkaClient,
       Libs.kafkaAvro,
       Libs.catsEffect,
       Libs.scalaTest % Test
     ),
-    dockerApiVersion := Some(DockerApiVersion(1, 40)),
+    dockerApiVersion   := Some(DockerApiVersion(1, 40)),
     dockerUpdateLatest := true
   )
   .dependsOn(domain, avro)
@@ -43,14 +43,14 @@ lazy val carDataProducer = (project in file("car-data-producer"))
 lazy val carDataConsumer = (project in file("car-data-consumer"))
   .settings(commonSettings)
   .settings(
-    name := "car-data-consumer",
+    name               := "car-data-consumer",
     libraryDependencies ++= Seq(
       Libs.kafkaClient,
       Libs.kafkaAvro,
       Libs.catsEffect,
       Libs.scalaTest % Test
     ),
-    dockerApiVersion := Some(DockerApiVersion(1, 40)),
+    dockerApiVersion   := Some(DockerApiVersion(1, 40)),
     dockerUpdateLatest := true
   )
   .dependsOn(domain, avro)
@@ -59,7 +59,7 @@ lazy val carDataConsumer = (project in file("car-data-consumer"))
 lazy val driverNotifier = (project in file("driver-notifier"))
   .settings(commonSettings)
   .settings(
-    name := "driver-notifier",
+    name               := "driver-notifier",
     libraryDependencies ++= Seq(
       Libs.kafkaStreamsScala,
       Libs.kafkaStreamsAvro,
@@ -71,9 +71,9 @@ lazy val driverNotifier = (project in file("driver-notifier"))
       Libs.grpcServices,
       Libs.scalaTest % Test
     ),
-    dockerApiVersion := Some(DockerApiVersion(1, 40)),
+    dockerApiVersion   := Some(DockerApiVersion(1, 40)),
     dockerUpdateLatest := true,
-    dockerBaseImage := "eclipse-temurin:11-jre"
+    dockerBaseImage    := "eclipse-temurin:11-jre"
   )
   .dependsOn(domain, avro)
   .enablePlugins(JavaAppPackaging)
@@ -81,7 +81,7 @@ lazy val driverNotifier = (project in file("driver-notifier"))
 lazy val driverNotifierApi = (project in file("driver-notifier-api"))
   .settings(commonSettings)
   .settings(
-    name := "driver-notifier-api",
+    name               := "driver-notifier-api",
     libraryDependencies ++= Seq(
       Libs.kafkaStreamsScala,
       Libs.kafkaStreamsAvro,
@@ -90,11 +90,20 @@ lazy val driverNotifierApi = (project in file("driver-notifier-api"))
       Libs.slf4j,
       Libs.catsLogging,
       Libs.grpcNetty,
+      Libs.tapirCore,
+      Libs.tapirHttp4s,
+      Libs.trace4cats,
+      Libs.trace4catsJaeger,
+      Libs.trace4catsStackdriver,
+      Libs.tapirJson,
+      Libs.http4sDsl,
+      Libs.http4sEmber,
+      Libs.tapirSwagger,
       Libs.scalaTest % Test
     ),
-    dockerApiVersion := Some(DockerApiVersion(1, 40)),
+    dockerApiVersion   := Some(DockerApiVersion(1, 40)),
     dockerUpdateLatest := true,
-    dockerBaseImage := "eclipse-temurin:11-jre"
+    dockerBaseImage    := "eclipse-temurin:11-jre"
   )
   .dependsOn(domain, avro)
   .enablePlugins(JavaAppPackaging)
@@ -102,7 +111,7 @@ lazy val driverNotifierApi = (project in file("driver-notifier-api"))
 lazy val avro = (project in file("avro"))
   .settings(commonSettings)
   .settings(
-    name := "avro",
+    name               := "avro",
     libraryDependencies ++= Seq(
       Libs.avro4sCore,
       Libs.sttp3Core,
@@ -111,7 +120,7 @@ lazy val avro = (project in file("avro"))
       Libs.smlTagging,
       Libs.scalaTest % Test
     ),
-    dockerApiVersion := Some(DockerApiVersion(1, 40)),
+    dockerApiVersion   := Some(DockerApiVersion(1, 40)),
     dockerUpdateLatest := true
   )
   .dependsOn(domain)
