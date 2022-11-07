@@ -23,6 +23,8 @@ object Dependencies {
     val trace4cats            = "0.14.0"
     val trace4catsJaeger      = "0.14.0"
     val trace4catsStackdriver = "0.14.0"
+    val trace4catsTapir       = "0.14.0"
+    val trace4catsHttp4s      = "0.14.0"
     val http4s                = "0.23.16"
     val tapirSwagger          = "1.1.4"
   }
@@ -52,9 +54,11 @@ object Dependencies {
     val tapirJson             = "com.softwaremill.sttp.tapir"   %% "tapir-json-circe"                     % V.tapirJson
     val trace4cats            = "io.janstenpickle"              %% "trace4cats-core"                      % V.trace4cats
     val trace4catsJaeger      = "io.janstenpickle"              %% "trace4cats-jaeger-thrift-exporter"    % V.trace4catsJaeger
-    val trace4catsStackdriver = "io.janstenpickle"              %% "trace4cats-stackdriver-http-exporter" % V.trace4catsStackdriver
+    val trace4catsStackdriver = "io.janstenpickle"              %% "trace4cats-stackdriver-grpc-exporter" % V.trace4catsStackdriver
     val http4sDsl             = "org.http4s"                    %% "http4s-dsl"                           % V.http4s
     val http4sEmber           = "org.http4s"                    %% "http4s-ember-server"                  % V.http4s
     val tapirSwagger          = "com.softwaremill.sttp.tapir"   %% "tapir-swagger-ui-bundle"              % V.tapirSwagger
+    val trace4catsHttp4s      = "io.janstenpickle"              %% "trace4cats-http4s-server"             % V.trace4catsHttp4s
+    val trace4catsTapir       = "io.janstenpickle"              %% "trace4cats-sttp-tapir"                % V.trace4catsTapir
   }
 }

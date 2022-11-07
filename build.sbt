@@ -99,6 +99,8 @@ lazy val driverNotifierApi = (project in file("driver-notifier-api"))
       Libs.http4sDsl,
       Libs.http4sEmber,
       Libs.tapirSwagger,
+      Libs.trace4catsHttp4s,
+      Libs.trace4catsTapir,
       Libs.scalaTest % Test
     ),
     dockerApiVersion   := Some(DockerApiVersion(1, 40)),
