@@ -24,6 +24,7 @@ object Dependencies {
     val trace4catsJaeger      = "0.14.0"
     val trace4catsStackdriver = "0.14.0"
     val trace4catsTapir       = "0.14.0"
+    val trace4catsFS2         = "0.14.0"
     val trace4catsHttp4s      = "0.14.0"
     val http4s                = "0.23.16"
     val tapirSwagger          = "1.1.4"
@@ -60,5 +61,6 @@ object Dependencies {
     val tapirSwagger          = "com.softwaremill.sttp.tapir"   %% "tapir-swagger-ui-bundle"              % V.tapirSwagger
     val trace4catsHttp4s      = "io.janstenpickle"              %% "trace4cats-http4s-server"             % V.trace4catsHttp4s
     val trace4catsTapir       = "io.janstenpickle"              %% "trace4cats-sttp-tapir"                % V.trace4catsTapir
+    val trace4catsFS2         = "io.janstenpickle"              %% "trace4cats-fs2"                       % V.trace4catsFS2
   }
 }

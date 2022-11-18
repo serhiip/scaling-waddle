@@ -1,22 +1,15 @@
 package car.drivernotifier
 
-import car.domain.CarId
-import org.typelevel.log4cats.syntax._
-import cats.effect.IO
-import cats.Applicative
-import org.apache.kafka.streams.KafkaStreams
-import org.typelevel.log4cats.Logger
 import cats.effect.kernel.Sync
-import cats.Monad
+import cats.syntax.applicative._
+import cats.syntax.flatMap._
+import cats.syntax.functor._
+import org.apache.kafka.common.serialization.Serde
+import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StoreQueryParameters
 import org.apache.kafka.streams.state.QueryableStoreTypes
-import org.apache.kafka.common.serialization.Serde
-import org.apache.kafka.common.serialization.Serializer
-import cats.syntax.applicative._
-import cats.syntax.functor._
-import cats.syntax.flatMap._
-import cats.effect.syntax.all._
-import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.syntax._
 
 trait StateQuery[F[_], K, V] {
   def getState(key: K, store: Store): Unit

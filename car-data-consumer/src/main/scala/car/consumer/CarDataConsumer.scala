@@ -2,7 +2,10 @@ package car.consumer
 
 import car.avro._
 import car.domain._
-import cats.effect.{ExitCode, IO, IOApp, Resource}
+import cats.effect.ExitCode
+import cats.effect.IO
+import cats.effect.IOApp
+import cats.effect.Resource
 import cats.implicits._
 import com.sksamuel.avro4s.RecordFormat
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG

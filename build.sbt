@@ -6,7 +6,17 @@ version := "0.1"
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.13.8",
-  resolvers += "Confluent Maven Repository" at "https://packages.confluent.io/maven/"
+  resolvers += "Confluent Maven Repository" at "https://packages.confluent.io/maven/",
+  scalacOptions ++= Seq(
+    "-encoding",
+    "utf8",
+    "-feature",
+    "-language:implicitConversions",
+    "-language:existentials",
+    "-unchecked",
+    "-Xlint",
+    "-Wunused:imports",
+  )
 )
 
 lazy val root = (project in file("."))
@@ -69,6 +79,9 @@ lazy val driverNotifier = (project in file("driver-notifier"))
       Libs.catsLogging,
       Libs.grpcNetty,
       Libs.grpcServices,
+      Libs.trace4cats,
+      Libs.trace4catsStackdriver,
+      Libs.trace4catsFS2,
       Libs.scalaTest % Test
     ),
     dockerApiVersion   := Some(DockerApiVersion(1, 40)),

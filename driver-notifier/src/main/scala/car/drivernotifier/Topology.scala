@@ -1,35 +1,22 @@
 package car.drivernotifier
 
-import org.apache.kafka.streams.Topology
-import org.apache.kafka.streams.KafkaStreams
 import car.avro._
 import car.domain._
 import car.drivernotifier.AvroSerdes._
+import cats.Applicative
 import cats.implicits._
 import com.sksamuel.avro4s.BinaryFormat
 import com.sksamuel.avro4s.kafka.GenericSerde
 import org.apache.kafka.common.utils.Bytes
-import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.StreamsConfig.{APPLICATION_ID_CONFIG, BOOTSTRAP_SERVERS_CONFIG}
+import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.scala.ImplicitConversions._
 import org.apache.kafka.streams.scala._
-import org.apache.kafka.streams.scala.kstream.{KGroupedStream, KTable, Materialized}
+import org.apache.kafka.streams.scala.kstream.KGroupedStream
+import org.apache.kafka.streams.scala.kstream.KTable
+import org.apache.kafka.streams.scala.kstream.Materialized
 import org.apache.kafka.streams.state.KeyValueStore
-import org.apache.kafka.streams.state.QueryableStoreTypes
-import org.apache.kafka.streams.StoreQueryParameters
 
-import java.util.Properties
-import org.apache
 import java.time.Duration
-
-import scala.jdk.CollectionConverters._
-import org.apache.kafka.common.serialization.Serde
-import org.apache.kafka.streams.KeyQueryMetadata
-import org.typelevel.log4cats.slf4j.Slf4jLogger
-import org.typelevel.log4cats.syntax._
-import cats.effect.kernel.Sync
-import cats.effect.IO
-import cats.Applicative
 
 trait Notifier[F[_]] {
   def getTopology: F[Topology]

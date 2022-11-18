@@ -1,7 +1,8 @@
 package car
 
 import car.domain._
-import com.sksamuel.avro4s.{AvroSchema, RecordFormat}
+import com.sksamuel.avro4s.AvroSchema
+import com.sksamuel.avro4s.RecordFormat
 import com.softwaremill.tagging._
 import org.apache.avro.Schema
 

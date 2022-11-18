@@ -1,19 +1,23 @@
 package car.producer
 
 import car.avro._
-import cats.effect.{ExitCode, IO, IOApp, Resource}
+import cats.effect.ExitCode
+import cats.effect.IO
+import cats.effect.IOApp
+import cats.effect.Resource
 import cats.implicits._
 import com.sksamuel.avro4s.RecordFormat
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
 import io.confluent.kafka.serializers.KafkaAvroSerializer
 import org.apache.avro.generic.IndexedRecord
-import org.apache.kafka.clients.producer.ProducerConfig.{
-  BOOTSTRAP_SERVERS_CONFIG,
-  CLIENT_ID_CONFIG,
-  KEY_SERIALIZER_CLASS_CONFIG,
-  VALUE_SERIALIZER_CLASS_CONFIG
-}
-import org.apache.kafka.clients.producer.{Callback, KafkaProducer, ProducerRecord, RecordMetadata}
+import org.apache.kafka.clients.producer.Callback
+import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG
+import org.apache.kafka.clients.producer.ProducerConfig.CLIENT_ID_CONFIG
+import org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG
+import org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG
+import org.apache.kafka.clients.producer.ProducerRecord
+import org.apache.kafka.clients.producer.RecordMetadata
 
 import scala.concurrent.Promise
 import scala.concurrent.duration.DurationInt

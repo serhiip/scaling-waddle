@@ -1,8 +1,9 @@
 package car.avro
 
 import io.circe.generic.auto._
+import sttp.client3.HttpURLConnectionBackend
+import sttp.client3._
 import sttp.client3.circe._
-import sttp.client3.{HttpURLConnectionBackend, _}
 
 object RegisterAvroSchemas extends App {
 

@@ -1,7 +1,10 @@
 package car.drivernotifier
 
-import car.domain.{DriverNotification, LocationData, TrafficVolume}
-import car.drivernotifier.DriverNotifierData.{CarAndLocationData, CarData}
+import car.domain.DriverNotification
+import car.domain.LocationData
+import car.domain.TrafficVolume
+import car.drivernotifier.DriverNotifierData.CarAndLocationData
+import car.drivernotifier.DriverNotifierData.CarData
 
 object DriverNotifications {
 

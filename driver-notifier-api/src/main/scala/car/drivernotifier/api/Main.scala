@@ -2,19 +2,12 @@ package car.drivernotifier.api
 
 import cats.effect._
 import com.comcast.ip4s._
-import org.http4s.HttpRoutes
-import org.http4s.dsl.io._
-import org.http4s.implicits._
 import org.http4s.ember.server._
 import car.drivernotifier.http.ApiSpec
 import cats.syntax.semigroupk._
-import cats.data.Kleisli
 import trace4cats.kernel.Span
 import cats.data.Kleisli
 import cats.effect.{Concurrent, IO, Resource, ResourceApp}
-import cats.syntax.flatMap._
-import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits._
 import trace4cats._
 import trace4cats.stackdriver.StackdriverGrpcSpanCompleter
@@ -25,6 +18,7 @@ import trace4cats.Trace
 import trace4cats.log.LogSpanCompleter
 import cats.syntax.functor._
 import cats.Applicative
+import car.drivernotifier.Notification
 
 object DriverNotifierApi extends ResourceApp.Forever {
 
@@ -36,7 +30,11 @@ object DriverNotifierApi extends ResourceApp.Forever {
       EntryPoint[F](SpanSampler.always[F], completer)
     }
 
-  def routes[F[_]: Async: Trace] = ApiSpec.getCountRoute[F] <+> ApiSpec.apiDocRoute[F]
+  def routes[F[_]: Async: Trace] = {
+    val notificationComponent = Notification.impl[F]
+
+    ApiSpec.getCountRoute[F](notification = notificationComponent) <+> ApiSpec.apiDocRoute[F]
+  }
 
   def run(args: List[String]): Resource[F, Unit] =
     for {
